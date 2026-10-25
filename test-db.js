@@ -1,5 +1,5 @@
 
-const db = require("./database");
+const{ db } = require("./database");
 
 const insert = db.prepare(`
   INSERT INTO sensor_readings

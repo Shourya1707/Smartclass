@@ -1,5 +1,5 @@
 
-const db = require("./database");
+const { db } = require("./database");
 
 console.log("Virtual devices:");
 console.table(
