@@ -49,10 +49,14 @@ function logAction(message, device = "lights", action = "info") {
     );
   }
 
-  const sql = `
+    const sql = `
     INSERT INTO control_logs (${insertColumns.join(", ")})
     VALUES (${insertColumns.map(() => "?").join(", ")})
   `;
+
+  db.prepare(sql).run(
+    ...insertColumns.map(column => values[column])
+  );
 
   db.prepare(sql).run(
     ...insertColumns.map(column => values[column])
