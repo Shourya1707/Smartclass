@@ -1,4 +1,4 @@
-
+```javascript
 const express = require("express");
 const path = require("path");
 
@@ -40,8 +40,10 @@ function logAction(message, device = "lights", action = "info") {
     columns.includes(column)
   );
 
-  if (!insertColumns.includes("device") ||
-      !insertColumns.includes("action")) {
+  if (
+    !insertColumns.includes("device") ||
+    !insertColumns.includes("action")
+  ) {
     throw new Error(
       "control_logs must contain device and action columns"
     );
@@ -52,17 +54,21 @@ function logAction(message, device = "lights", action = "info") {
     VALUES (${insertColumns.map(() => "?").join(", ")})
   `;
 
-  db.prepare(sql).run(...insertColumns.map(column => values[column]));
+  db.prepare(sql).run(
+    ...insertColumns.map(column => values[column])
+  );
 }
 
 // --------------------------------------------------
-// Health check
+// Health check — updated for CI/CD demonstration
 // --------------------------------------------------
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,
     project: "SmartClass",
-    status: "Backend is healthy"
+    version: "2.0.0",
+    status: "Backend is healthy",
+    deployment: "Jenkins CI/CD + Kubernetes"
   });
 });
 
@@ -133,6 +139,7 @@ app.post("/api/readings", (req, res, next) => {
     const humidity = Number(body.humidity);
     const lightLevel = Number(body.lightLevel ?? body.light_level);
     const people = Number(body.people ?? 0);
+
     const motionDetected =
       body.motionDetected ?? body.motion_detected ?? false;
 
@@ -151,7 +158,8 @@ app.post("/api/readings", (req, res, next) => {
     if (
       temperature < 0 || temperature > 100 ||
       humidity < 0 || humidity > 100 ||
-      lightLevel < 0 || people < 0
+      lightLevel < 0 ||
+      people < 0
     ) {
       return res.status(400).json({
         success: false,
@@ -176,7 +184,11 @@ app.post("/api/readings", (req, res, next) => {
       sensorColumns.includes(column)
     );
 
-    for (const required of ["temperature", "humidity", "light_level"]) {
+    for (const required of [
+      "temperature",
+      "humidity",
+      "light_level"
+    ]) {
       if (!insertColumns.includes(required)) {
         throw new Error(`sensor_readings is missing ${required}`);
       }
@@ -215,6 +227,7 @@ app.post("/api/readings", (req, res, next) => {
 app.get("/api/readings", (req, res, next) => {
   try {
     const parsedLimit = Number.parseInt(req.query.limit, 10);
+
     const limit = Number.isFinite(parsedLimit)
       ? Math.max(1, Math.min(parsedLimit, 500))
       : 100;
@@ -385,3 +398,4 @@ app.use((error, req, res, next) => {
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`SmartClass running on port ${PORT}`);
 });
+```
