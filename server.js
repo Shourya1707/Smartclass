@@ -1,4 +1,4 @@
-```javascript
+
 const express = require("express");
 const path = require("path");
 
@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // --------------------------------------------------
-// Activity logging: supports the existing SQLite schema
+// Activity logging
 // --------------------------------------------------
 function logAction(message, device = "lights", action = "info") {
   const allowedDevices = ["ac", "fan", "lights"];
@@ -49,22 +49,19 @@ function logAction(message, device = "lights", action = "info") {
     );
   }
 
-    const sql =`
+  const sql = `
     INSERT INTO control_logs (${insertColumns.join(", ")})
     VALUES (${insertColumns.map(() => "?").join(", ")})
   `;
 
-  db.prepare(sql).run(
-    ...insertColumns.map(column => values[column])
-  );
-
+  // Execute the insert only once.
   db.prepare(sql).run(
     ...insertColumns.map(column => values[column])
   );
 }
 
 // --------------------------------------------------
-// Health check — updated for CI/CD demonstration
+// Health check
 // --------------------------------------------------
 app.get("/api/health", (req, res) => {
   res.json({
@@ -133,7 +130,7 @@ app.post("/api/settings", (req, res, next) => {
 });
 
 // --------------------------------------------------
-// Sensor readings
+// Create sensor readings
 // --------------------------------------------------
 app.post("/api/readings", (req, res, next) => {
   try {
@@ -160,8 +157,10 @@ app.post("/api/readings", (req, res, next) => {
     }
 
     if (
-      temperature < 0 || temperature > 100 ||
-      humidity < 0 || humidity > 100 ||
+      temperature < 0 ||
+      temperature > 100 ||
+      humidity < 0 ||
+      humidity > 100 ||
       lightLevel < 0 ||
       people < 0
     ) {
@@ -228,6 +227,9 @@ app.post("/api/readings", (req, res, next) => {
   }
 });
 
+// --------------------------------------------------
+// Get sensor readings
+// --------------------------------------------------
 app.get("/api/readings", (req, res, next) => {
   try {
     const parsedLimit = Number.parseInt(req.query.limit, 10);
@@ -402,4 +404,3 @@ app.use((error, req, res, next) => {
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`SmartClass running on port ${PORT}`);
 });
-```
