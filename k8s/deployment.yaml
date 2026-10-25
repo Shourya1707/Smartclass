@@ -1,0 +1,26 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smartclass
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smartclass
+  template:
+    metadata:
+      labels:
+        app: smartclass
+    spec:
+      containers:
+        - name: smartclass
+          image: smartclass:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "3000"
