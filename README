@@ -1,0 +1,53 @@
+# SmartClass
+
+A software-only smart classroom simulation built with Node.js,
+Express, SQLite, HTML, CSS, and JavaScript.
+
+## Requirements
+
+- Node.js 18 or newer
+- npm
+
+## Installation
+
+1. Open a terminal in the SmartClass folder.
+2. Install dependencies:
+
+   npm install
+
+3. Start the application:
+
+   npm start
+
+4. Open http://localhost:3000
+
+## Features
+
+- Simulated temperature, humidity, lighting, and occupancy
+- Configurable automation thresholds
+- Virtual lights, fan, and AC controls
+- Saved sensor readings and history chart
+- Scenario presets
+- Attendance QR session demo
+- JSON report export
+- SQLite database persistence
+- Backend health endpoint
+
+## API
+
+- GET /api/health
+- GET /api/settings
+- POST /api/settings
+- GET /api/readings
+- POST /api/readings
+- GET /api/readings/latest
+- GET /api/devices
+- POST /api/devices/:device
+- GET /api/activity
+- DELETE /api/activity
+
+## Notes
+
+The devices and sensor values are simulated. No physical IoT
+hardware is connected. QR code generation uses a CDN library
+and requires an internet connection.

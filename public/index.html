@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartClass | Smart Classroom IoT Dashboard</title>
+<style>
+:root{--bg:#0b1020;--panel:#131b2f;--panel2:#18233b;--line:#283651;--text:#eef3ff;--muted:#9eacc8;--blue:#6ca8ff;--cyan:#52dfd0;--green:#4bd49a;--amber:#ffca6a;--red:#ff7887}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top left,#17274a 0,#0b1020 52%);color:var(--text);font:15px/1.45 Inter,Segoe UI,Arial,sans-serif}
+.wrap{max-width:1400px;margin:auto;padding:24px}
+.top{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:22px;flex-wrap:wrap}
+.brand{display:flex;gap:13px;align-items:center}
+.logo{width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,#70aaff,#56dfd0);display:grid;place-items:center;color:#071224;font-size:25px;font-weight:900;box-shadow:0 8px 30px #4c9bff33}
+h1{font-size:25px;margin:0;letter-spacing:-.5px}
+.sub{color:var(--muted);margin-top:3px;font-size:13px}
+.actions{display:flex;gap:9px;flex-wrap:wrap}
+button{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:650}
+button:hover{border-color:var(--blue)}
+button.primary{background:var(--blue);color:#081326;border-color:var(--blue)}
+button.ghost{background:transparent}
+.statusline{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px}
+.dot{width:9px;height:9px;background:var(--green);border-radius:50%;display:inline-block;box-shadow:0 0 12px #4bd49a88}
+.banner{display:flex;gap:12px;align-items:flex-start;background:#382d173f;border:1px solid #6b552d;border-radius:12px;padding:12px 15px;color:#f8dba5;margin-bottom:18px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:16px}
+.card{background:linear-gradient(145deg,#151f35,#10182a);border:1px solid var(--line);border-radius:17px;padding:17px;box-shadow:0 12px 35px #00000014;min-width:0}
+.metric-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px}
+.ico{font-size:20px}
+.metric{font-size:31px;font-weight:800;margin:12px 0 2px;letter-spacing:-1px}
+.unit{font-size:15px;color:var(--muted);font-weight:500}
+.foot{font-size:12px;color:var(--muted)}
+.up{color:var(--cyan)}
+.layout{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;margin-bottom:16px}
+.card h2{font-size:16px;margin:0 0 4px}
+.desc{font-size:12px;color:var(--muted);margin-bottom:17px}
+.control{padding:12px 0;border-bottom:1px solid #26324a}
+.control:last-child{border-bottom:0}
+.control-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px}
+.control label{font-size:13px;color:#dce6fa;font-weight:650}
+.value{font-weight:800;color:var(--cyan);font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--blue);cursor:pointer}
+input[type=number],input[type=text],select{background:#0b1325;border:1px solid #33425f;color:var(--text);border-radius:8px;padding:9px;width:100%;outline:none}
+input:focus,select:focus{border-color:var(--blue)}
+.range-labels{display:flex;justify-content:space-between;color:#7485a5;font-size:11px;margin-top:2px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.sensor-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #26324a;gap:12px}
+.sensor-row:last-child{border:0}
+.sensor-row small{display:block;color:var(--muted);margin-top:2px}
+.pill{font-size:11px;padding:5px 8px;border-radius:99px;background:#173c35;color:var(--green);font-weight:800;white-space:nowrap}
+.pill.off{background:#3b2531;color:var(--red)}
+.switch{position:relative;width:44px;height:25px;display:inline-block;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#3b4862;border-radius:20px;transition:.2s}
+.slider:before{content:"";position:absolute;width:17px;height:17px;left:4px;top:4px;border-radius:50%;background:white;transition:.2s}
+.switch input:checked+.slider{background:#348f7b}
+.switch input:checked+.slider:before{transform:translateX(19px)}
+.device{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid #26324a;gap:12px}
+.device:last-child{border:0}
+.device-name{display:flex;gap:12px;align-items:center}
+.device-icon{width:40px;height:40px;border-radius:12px;background:#243653;display:grid;place-items:center;font-size:21px}
+.device-name strong{display:block;font-size:14px}
+.device-name small{color:var(--muted);font-size:12px}
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.log{max-height:240px;overflow:auto}
+.logitem{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #26324a;font-size:12px}
+.time{color:#7184a6;min-width:65px}
+.logitem p{margin:0;overflow-wrap:anywhere}
+.tag{color:var(--cyan);font-weight:800}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.quick button{font-size:12px;padding:8px 10px}
+.footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#7585a4;font-size:11px;padding:18px 3px 4px}
+.modalback{display:none;position:fixed;inset:0;background:#020611bb;align-items:center;justify-content:center;padding:18px;z-index:4}
+.modal{width:min(520px,100%);background:#141e33;border:1px solid var(--line);border-radius:17px;padding:22px}
+.modal h2{margin:0 0 8px}
+.modal p{color:var(--muted);font-size:13px}
+.modalgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.qr-layout{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.qr-layout img{width:220px;height:220px;max-width:100%;background:white;border-radius:10px;padding:8px}
+@media(max-width:1000px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.layout,.bottom{grid-template-columns:1fr}}
+@media(max-width:560px){.wrap{padding:14px}.grid{grid-template-columns:1fr 1fr;gap:9px}.card{padding:13px}.metric{font-size:25px}h1{font-size:21px}.two{grid-template-columns:1fr}.actions button{padding:9px}.banner{font-size:12px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brand">
+    <div class="logo">⌂</div>
+    <div>
+      <h1>SmartClass <span style="color:var(--cyan)">IoT</span></h1>
+      <div class="sub">Smart Classroom Monitoring &amp; Automation System</div>
+    </div>
+  </div>
+  <div>
+    <div class="statusline"><span class="dot"></span><span>DEMO SIMULATION ACTIVE</span><span>•</span><span id="clock">--:--:--</span></div>
+    <div class="actions" style="margin-top:10px">
+      <button class="ghost" onclick="resetDemo()">↺ Reset demo</button>
+      <button class="primary" onclick="openEdit()">✎ Edit all readings</button>
+    </div>
+  </div>
+</header>
+
+<div class="banner">
+  <span style="font-size:18px">ⓘ</span>
+  <div><strong>Presentation mode — manual simulation.</strong> Change sensor values, toggle devices, and demonstrate automation rules. These are manually controlled demo readings, not live hardware telemetry.</div>
+</div>
+
+<section class="grid">
+  <div class="card"><div class="metric-top">Temperature <span class="ico">🌡️</span></div><div class="metric"><span id="tempMetric">24.0</span><span class="unit"> °C</span></div><div class="foot"><span class="up">●</span> Classroom ambient</div></div>
+  <div class="card"><div class="metric-top">Humidity <span class="ico">💧</span></div><div class="metric"><span id="humMetric">40</span><span class="unit"> %</span></div><div class="foot">Relative humidity</div></div>
+  <div class="card"><div class="metric-top">Light level <span class="ico">☀️</span></div><div class="metric"><span id="lightMetric">1001</span><span class="unit"> ADC</span></div><div class="foot">LDR sensor raw reading (0–4095)</div></div>
+  <div class="card"><div class="metric-top">Occupancy <span class="ico">👥</span></div><div class="metric"><span id="occupancyMetric">NO</span></div><div class="foot" id="occupancyFoot">PIR motion not detected</div></div>
+</section>
+
+<section class="layout">
+ <div class="card">
+  <h2>Manual sensor controls</h2>
+  <div class="desc">Move the sliders or type values to simulate changing classroom conditions.</div>
+  <div class="control"><div class="control-head"><label for="temp">Temperature</label><span class="value"><span id="tempVal">24.0</span> °C</span></div><input id="temp" type="range" min="10" max="45" step=".5" value="24" oninput="changeValue('temp',this.value)"><div class="range-labels"><span>10 °C</span><span>45 °C</span></div></div>
+  <div class="control"><div class="control-head"><label for="humidity">Humidity</label><span class="value"><span id="humidityVal">40</span> %</span></div><input id="humidity" type="range" min="10" max="100" step="1" value="40" oninput="changeValue('humidity',this.value)"><div class="range-labels"><span>10%</span><span>100%</span></div></div>
+  <div class="control"><div class="control-head"><label for="light">Light level (LDR ADC)</label><span class="value"><span id="lightVal">1001</span></span></div><input id="light" type="range" min="0" max="4095" step="1" value="1001" oninput="changeValue('light',this.value)"><div class="range-labels"><span>0 — dark</span><span>4095 — bright (raw ADC)</span></div></div>
+  <div class="control"><div class="control-head"><label for="people">Estimated people in room</label><span class="value"><span id="peopleVal">0</span> people</span></div><input id="people" type="range" min="0" max="60" step="1" value="0" oninput="changeValue('people',this.value)"><div class="range-labels"><span>0 people</span><span>60 people</span></div></div>
+  <div class="quick">
+    <button onclick="preset('normal')">Normal classroom</button>
+    <button onclick="preset('hot')">Hot &amp; humid</button>
+    <button onclick="preset('dark')">Dark room</button>
+    <button onclick="preset('occupied')">Class in session</button>
+  </div>
+ </div>
+
+ <div class="card">
+  <h2>Classroom status &amp; automation</h2>
+  <div class="desc">Status updates immediately as you change values and devices.</div>
+  <div class="sensor-row"><div><strong>Environment</strong><small id="environmentText">Comfortable classroom conditions</small></div><span class="pill" id="environmentPill">NORMAL</span></div>
+  <div class="sensor-row"><div><strong>Occupancy detection</strong><small id="motionText">No occupancy entered</small></div><span class="pill off" id="motionPill">VACANT</span></div>
+  <div class="sensor-row"><div><strong>Lighting condition</strong><small id="lightingText">Raw LDR reading is above the demo threshold</small></div><span class="pill" id="lightingPill">OK</span></div>
+  <div class="sensor-row"><div><strong>Fan recommendation</strong><small id="fanAdvice">Fan can remain off</small></div><span class="pill" id="fanAdvicePill">STANDBY</span></div>
+  <div style="margin-top:16px;background:#0b1325;border:1px solid var(--line);border-radius:12px;padding:14px">
+    <div class="foot">Active rule</div><strong id="ruleText">No automation trigger active</strong>
+    <p class="foot">Demo rules: fan suggested above 28 °C; lighting suggested when room is dark and occupied.</p>
+  </div>
+ </div>
+</section>
+
+<section class="layout">
+ <div class="card">
+  <h2>Device controls</h2>
+  <div class="desc">Toggle simulated classroom equipment. No physical hardware is controlled.</div>
+  <div class="device"><div class="device-name"><span class="device-icon">💡</span><div><strong>Classroom lights</strong><small id="lightsState">Off · Manual</small></div></div><label class="switch"><input id="lightsSwitch" type="checkbox" onchange="toggleDevice('lights',this.checked)"><span class="slider"></span></label></div>
+  <div class="device"><div class="device-name"><span class="device-icon">🌀</span><div><strong>Ceiling fan</strong><small id="fanState">Off · Manual</small></div></div><label class="switch"><input id="fanSwitch" type="checkbox" onchange="toggleDevice('fan',this.checked)"><span class="slider"></span></label></div>
+  <div class="device"><div class="device-name"><span class="device-icon">❄️</span><div><strong>Air conditioning</strong><small id="acState">Off · Manual</small></div></div><label class="switch"><input id="acSwitch" type="checkbox" onchange="toggleDevice('ac',this.checked)"><span class="slider"></span></label></div>
+  <div class="device"><div class="device-name"><span class="device-icon">📢</span><div><strong>Alert indicator</strong><small id="alertState">Off · System</small></div></div><label class="switch"><input id="alertSwitch" type="checkbox" onchange="toggleDevice('alert',this.checked)"><span class="slider"></span></label></div>
+ </div>
+
+ <div class="card">
+  <h2>Attendance QR code</h2>
+  <div class="desc">Choose a class to generate a demo attendance QR and session ID.</div>
+  <label for="classChoice" class="foot">Select class</label>
+  <select id="classChoice" onchange="changeClass(this.value)">
+    <option value="CSE-A">B.Tech CSE — Section A</option>
+    <option value="CSE-B">B.Tech CSE — Section B</option>
+    <option value="CSE-C">B.Tech CSE — Section C</option>
+    <option value="ECE-A">B.Tech ECE — Section A</option>
+    <option value="ME-A">B.Tech Mechanical — Section A</option>
+    <option value="IT-A">B.Tech IT — Section A</option>
+  </select>
+  <div class="qr-layout" style="margin-top:14px">
+    <img id="attendanceQr" alt="Demo attendance QR code" src="" width="220" height="220">
+    <div>
+      <div class="pill">SESSION ACTIVE · DEMO</div>
+      <p class="foot">Selected class</p><strong id="selectedClassName">B.Tech CSE — Section A</strong>
+      <p class="foot">Session ID</p><strong id="sessionId">SC-CSE-A-001</strong>
+      <p class="foot">This QR contains demo session details only; it does not submit attendance to a live server.</p>
+      <div class="quick"><button onclick="downloadQr()">⇩ Save QR image</button><button onclick="newSession()">↻ New session</button><button onclick="downloadReport()">⇩ Export report</button></div>
+    </div>
+  </div>
+ </div>
+</section>
+
+<section class="bottom">
+ <div class="card">
+  <h2>Activity log</h2><div class="desc">Recent sensor changes and device actions.</div>
+  <div class="log" id="logs"></div>
+ </div>
+ <div class="card">
+  <h2>Attendance overview</h2><div class="desc">Demo attendance totals for presentation; the QR above contains session details only.</div>
+  <div class="two">
+    <div style="background:#0b1325;padding:16px;border-radius:12px"><div class="foot">Present</div><div class="metric" style="font-size:28px" id="present">26</div><div class="foot">Students checked in</div></div>
+    <div style="background:#0b1325;padding:16px;border-radius:12px"><div class="foot">Absent</div><div class="metric" style="font-size:28px" id="absent">6</div><div class="foot">Of 32 students</div></div>
+  </div>
+  <div class="control"><div class="control-head"><label for="attendance">Present students</label><span class="value"><span id="attendanceVal">26</span> / 32</span></div><input id="attendance" type="range" min="0" max="32" value="26" oninput="changeAttendance(this.value)"></div>
+  <div class="quick"><button onclick="changeAttendance(32)">Mark all present</button><button onclick="changeAttendance(0)">Clear attendance</button></div>
+  <div class="foot" style="margin-top:12px">Attendance values are demo data and are not verified student records.</div>
+ </div>
+</section>
+
+<div class="footer"><span>SmartClass IoT · Academic demonstration prototype</span><span>ESP32 · DHT22 · LDR · PIR · REST API concept</span></div>
+</div>
+
+<div class="modalback" id="editModal" onclick="if(event.target===this)closeEdit()">
+ <div class="modal">
+  <h2>Edit all readings</h2><p>Enter values for a controlled presentation scenario.</p>
+  <div class="modalgrid">
+   <div><label class="foot" for="editTemp">Temperature (°C)</label><input id="editTemp" type="number" min="10" max="45" step=".5"></div>
+   <div><label class="foot" for="editHumidity">Humidity (%)</label><input id="editHumidity" type="number" min="10" max="100"></div>
+   <div><label class="foot" for="editLight">Light ADC (0–4095)</label><input id="editLight" type="number" min="0" max="4095"></div>
+   <div><label class="foot" for="editPeople">People in room</label><input id="editPeople" type="number" min="0" max="60"></div>
+  </div>
+  <div class="actions"><button onclick="closeEdit()">Cancel</button><button class="primary" onclick="applyEdit()">Apply readings</button></div>
+ </div>
+</div>
+
+<script>
+const state={temp:24,humidity:40,light:1001,people:0,attendance:26,classCode:'CSE-A',sessionNumber:1,devices:{lights:false,fan:false,ac:false,alert:false},logs:[]};
+const $=id=>document.getElementById(id);
+function stamp(){return new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+function addLog(message){state.logs.unshift({time:stamp(),message});state.logs=state.logs.slice(0,18);renderLogs()}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderLogs(){$('logs').innerHTML=state.logs.map(x=>`<div class="logitem"><span class="time">${x.time}</span><p>${escapeHtml(x.message)}</p></div>`).join('')||'<div class="foot">No activity yet.</div>'}
+function changeValue(key,val){state[key]=Number(val);const ids={temp:'tempVal',humidity:'humidityVal',light:'lightVal',people:'peopleVal'};$(ids[key]).textContent=key==='temp'?state.temp.toFixed(1):state[key];render();addLog(({temp:'Temperature changed to '+state.temp.toFixed(1)+' °C',humidity:'Humidity changed to '+state.humidity+'%',light:'LDR reading changed to '+state.light,people:'Estimated occupancy changed to '+state.people+' people'})[key])}
+function toggleDevice(key,on){state.devices[key]=on;renderDevices();addLog((on?'Turned ON ':'Turned OFF ')+({lights:'classroom lights',fan:'ceiling fan',ac:'air conditioning',alert:'alert indicator'}[key]))}
+function renderDevices(){for(const k of Object.keys(state.devices)){const names={lights:'Classroom lights',fan:'Ceiling fan',ac:'Air conditioning',alert:'Alert indicator'};$(k+'Switch').checked=state.devices[k];$(k+'State').textContent=(state.devices[k]?'On':'Off')+' · '+(k==='alert'?'System':'Manual')}}
+function render(){
+ $('tempMetric').textContent=state.temp.toFixed(1);$('humMetric').textContent=state.humidity;$('lightMetric').textContent=state.light;
+ $('occupancyMetric').textContent=state.people>0?'YES':'NO';$('occupancyFoot').textContent=state.people>0?state.people+' people (manual estimate)':'PIR motion not detected (demo)';
+ $('tempVal').textContent=state.temp.toFixed(1);$('humidityVal').textContent=state.humidity;$('lightVal').textContent=state.light;$('peopleVal').textContent=state.people;
+ $('temp').value=state.temp;$('humidity').value=state.humidity;$('light').value=state.light;$('people').value=state.people;
+ const hot=state.temp>=28||state.humidity>=75,dark=state.light<1200,occupied=state.people>0;
+ $('environmentText').textContent=hot?'Warm or humid — consider ventilation':'Comfortable classroom conditions';
+ $('environmentPill').textContent=hot?'CHECK':'NORMAL';$('environmentPill').className='pill'+(hot?' off':'');
+ $('motionText').textContent=occupied?'Room marked occupied in demo':'No occupancy entered';$('motionPill').textContent=occupied?'OCCUPIED':'VACANT';$('motionPill').className='pill'+(occupied?'':' off');
+ $('lightingText').textContent=dark?'Low raw LDR reading — room may be dark':'Raw LDR reading is above the demo threshold';$('lightingPill').textContent=dark?'LOW':'OK';$('lightingPill').className='pill'+(dark?' off':'');
+ $('fanAdvice').textContent=state.temp>=28?'Temperature is high; fan recommended':'Fan can remain off';$('fanAdvicePill').textContent=state.temp>=28?'RECOMMENDED':'STANDBY';$('fanAdvicePill').className='pill'+(state.temp>=28?' off':'');
+ const rules=[];if(state.temp>=28)rules.push('High temperature: consider switching the fan on.');if(dark&&occupied)rules.push('Room is occupied and dark: switch the lights on.');if(state.humidity>=75)rules.push('High humidity: increase ventilation.');$('ruleText').textContent=rules.join(' ')||'No automation trigger active';
+}
+function renderAll(){render();renderDevices();$('attendance').value=state.attendance;$('attendanceVal').textContent=state.attendance;$('present').textContent=state.attendance;$('absent').textContent=32-state.attendance;renderLogs()}
+function preset(which){const presets={normal:{temp:24,humidity:40,light:2300,people:0},hot:{temp:32,humidity:82,light:1800,people:12},dark:{temp:23,humidity:45,light:250,people:8},occupied:{temp:26.5,humidity:55,light:950,people:28}};Object.assign(state,presets[which]);state.devices.lights=which==='dark'||which==='occupied';state.devices.fan=which==='hot';state.devices.ac=false;state.devices.alert=which==='hot';renderAll();addLog('Loaded '+which+' classroom scenario')}
+function changeAttendance(v){state.attendance=Math.max(0,Math.min(32,Number(v)));$('attendance').value=state.attendance;$('attendanceVal').textContent=state.attendance;$('present').textContent=state.attendance;$('absent').textContent=32-state.attendance;addLog('Attendance demo updated: '+state.attendance+' of 32 present')}
+function openEdit(){for(const [id,val] of [['editTemp',state.temp],['editHumidity',state.humidity],['editLight',state.light],['editPeople',state.people]])$(id).value=val;$('editModal').style.display='flex'}
+function closeEdit(){$('editModal').style.display='none'}
+function applyEdit(){const vals={temp:Number($('editTemp').value),humidity:Number($('editHumidity').value),light:Number($('editLight').value),people:Number($('editPeople').value)};if(!Number.isFinite(vals.temp)||vals.temp<10||vals.temp>45||!Number.isFinite(vals.humidity)||vals.humidity<10||vals.humidity>100||!Number.isInteger(vals.light)||vals.light<0||vals.light>4095||!Number.isInteger(vals.people)||vals.people<0||vals.people>60){alert('Please enter valid values within the displayed ranges.');return}Object.assign(state,vals);closeEdit();renderAll();addLog('Applied custom readings for presentation')}
+function resetDemo(){Object.assign(state,{temp:24,humidity:40,light:1001,people:0,attendance:26,devices:{lights:false,fan:false,ac:false,alert:false},logs:[]});renderAll();addLog('Demo reset to default values')}
+function downloadReport(){const report={title:'SmartClass demo snapshot',createdAt:new Date().toISOString(),mode:'Manual simulation — not live hardware telemetry',readings:{temperatureC:state.temp,humidityPercent:state.humidity,ldrRawADC:state.light,estimatedPeople:state.people},devices:state.devices,attendance:{present:state.attendance,absent:32-state.attendance,total:32},recentActivity:state.logs};const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='smartclass-demo-report.json';a.click();URL.revokeObjectURL(url);addLog('Exported demo report')}
+const classNames={'CSE-A':'B.Tech CSE — Section A','CSE-B':'B.Tech CSE — Section B','CSE-C':'B.Tech CSE — Section C','ECE-A':'B.Tech ECE — Section A','ME-A':'B.Tech Mechanical — Section A','IT-A':'B.Tech IT — Section A'};
+function getSessionId(){return 'SC-'+state.classCode.replace(/[^A-Z0-9]/g,'')+'-'+String(state.sessionNumber).padStart(3,'0')}
+function refreshQr(){const className=classNames[state.classCode]||state.classCode,sessionId=getSessionId();$('selectedClassName').textContent=className;$('sessionId').textContent=sessionId;const qrText='SmartClass DEMO ATTENDANCE | Class: '+className+' | Session ID: '+sessionId+' | Demo only; attendance is not submitted';$('attendanceQr').src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=8&data='+encodeURIComponent(qrText);$('attendanceQr').alt='Demo attendance QR for '+className+' session '+sessionId}
+function changeClass(code){state.classCode=code;state.sessionNumber=1;refreshQr();addLog('Attendance QR changed to '+(classNames[code]||code)+' ('+getSessionId()+')')}
+function newSession(){state.sessionNumber++;refreshQr();addLog('Generated new demo session '+getSessionId()+' for '+(classNames[state.classCode]||state.classCode))}
+function downloadQr(){const img=$('attendanceQr');if(!img.complete||!img.naturalWidth){alert('QR image is still loading. Please try again in a moment.');return}const a=document.createElement('a');a.href=img.src;a.download='smartclass-'+state.classCode.toLowerCase()+'-'+getSessionId().toLowerCase()+'.png';a.target='_blank';a.click();addLog('Saved demo attendance QR image')}
+setInterval(()=>$('clock').textContent=stamp(),1000);renderAll();refreshQr();addLog('Dashboard initialized in manual presentation mode');addLog('Demo data is clearly separated from live sensor telemetry');
+</script>
+</body>
+</html>
