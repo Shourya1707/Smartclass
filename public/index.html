@@ -20,6 +20,7 @@ button:hover{border-color:var(--blue)}button.primary{background:var(--blue);colo
 .statusline{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:13px}
 .dot{width:9px;height:9px;background:var(--green);border-radius:50%;display:inline-block}
 .banner{background:#382d173f;border:1px solid #6b552d;border-radius:12px;padding:12px 15px;color:#f8dba5;margin-bottom:18px;font-size:13px}
+.version-banner{background:#142e3b;border-color:#286174;color:#9be8f3}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-bottom:16px}
 .card{background:linear-gradient(145deg,#151f35,#10182a);border:1px solid var(--line);border-radius:17px;padding:17px;min-width:0}
 .metric-top{display:flex;justify-content:space-between;color:var(--muted);font-size:13px}
@@ -78,6 +79,11 @@ input[type=number],select{background:#0b1325;border:1px solid #33425f;color:var(
 
 <div class="banner">ⓘ <strong>Presentation mode — manual simulation.</strong> These are simulated readings, not live hardware telemetry.</div>
 
+<!-- Added for demonstrating the CI/CD deployment update -->
+<div class="banner version-banner" id="deploymentVersion">
+  Deployment Version: v1.1 — CI/CD Update
+</div>
+
 <section class="grid">
   <div class="card"><div class="metric-top">Temperature 🌡️</div><div class="metric"><span id="tempMetric">24.0</span><span class="unit"> °C</span></div><div class="foot">Classroom ambient</div></div>
   <div class="card"><div class="metric-top">Humidity 💧</div><div class="metric"><span id="humMetric">40</span><span class="unit"> %</span></div><div class="foot">Relative humidity</div></div>
@@ -134,6 +140,7 @@ input[type=number],select{background:#0b1325;border:1px solid #33425f;color:var(
 <div class="foot">Attendance values are demo data, not verified student records.</div>
 </div>
 </section>
+
 <div class="footer"><span>SmartClass IoT · Academic demonstration prototype</span><span>ESP32 · DHT22 · LDR · PIR · REST API</span></div>
 </div>
 
@@ -167,7 +174,6 @@ async function api(url, options = {}) {
   }
   return data;
 }
-
 function stamp() {
   return new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"});
 }
@@ -186,7 +192,6 @@ function addLog(message) {
   state.logs = state.logs.slice(0,18);
   renderLogs();
 }
-
 async function saveCurrentReadings() {
   try {
     await api("/api/settings", {
@@ -213,7 +218,6 @@ async function saveCurrentReadings() {
     addLog("Could not save sensor data: " + error.message);
   }
 }
-
 function changeValue(key, value) {
   if (!["temp","humidity","light","people"].includes(key)) return;
   state[key] = Number(value);
@@ -226,11 +230,9 @@ function changeValue(key, value) {
     people:`Estimated occupancy changed to ${state.people} people`
   };
   addLog(messages[key]);
-
   clearTimeout(sensorSaveTimer);
   sensorSaveTimer = setTimeout(saveCurrentReadings,400);
 }
-
 async function toggleDevice(key, on) {
   if (!(key in state.devices)) return;
   const previous = state.devices[key];
@@ -241,7 +243,6 @@ async function toggleDevice(key, on) {
     addLog(`${on ? "Turned ON" : "Turned OFF"} alert indicator (demo only)`);
     return;
   }
-
   try {
     await api(`/api/devices/${key}`, {
       method:"POST",
@@ -255,7 +256,6 @@ async function toggleDevice(key, on) {
     addLog("Device update failed: " + error.message);
   }
 }
-
 function renderDevices() {
   for (const key of Object.keys(state.devices)) {
     $(key+"Switch").checked = state.devices[key];
@@ -264,7 +264,6 @@ function renderDevices() {
       (key === "alert" ? " · System (demo)" : " · Manual");
   }
 }
-
 function render() {
   $("tempMetric").textContent = state.temp.toFixed(1);
   $("humMetric").textContent = state.humidity;
@@ -273,7 +272,6 @@ function render() {
   $("occupancyFoot").textContent = state.people > 0
     ? `${state.people} people (manual estimate)`
     : "PIR motion not detected (demo)";
-
   $("tempVal").textContent = state.temp.toFixed(1);
   $("humidityVal").textContent = state.humidity;
   $("lightVal").textContent = state.light;
@@ -286,7 +284,6 @@ function render() {
   const hot = state.temp >= 28 || state.humidity >= 75;
   const dark = state.light < 1200;
   const occupied = state.people > 0;
-
   $("environmentText").textContent = hot
     ? "Warm or humid — consider ventilation"
     : "Comfortable classroom conditions";
@@ -298,26 +295,22 @@ function render() {
     : "No occupancy entered";
   $("motionPill").textContent = occupied ? "OCCUPIED" : "VACANT";
   $("motionPill").className = "pill" + (occupied ? "" : " off");
-
   $("lightingText").textContent = dark
     ? "Low raw LDR reading — room may be dark"
     : "Raw LDR reading is above the demo threshold";
   $("lightingPill").textContent = dark ? "LOW" : "OK";
   $("lightingPill").className = "pill" + (dark ? " off" : "");
-
   $("fanAdvice").textContent = state.temp >= 28
     ? "Temperature is high; fan recommended"
     : "Fan can remain off";
   $("fanAdvicePill").textContent = state.temp >= 28 ? "RECOMMENDED" : "STANDBY";
   $("fanAdvicePill").className = "pill" + (state.temp >= 28 ? " off" : "");
-
   const rules = [];
   if (state.temp >= 28) rules.push("High temperature: consider switching the fan on.");
   if (dark && occupied) rules.push("Room is occupied and dark: switch the lights on.");
   if (state.humidity >= 75) rules.push("High humidity: increase ventilation.");
   $("ruleText").textContent = rules.join(" ") || "No automation trigger active";
 }
-
 function renderAll() {
   render();
   renderDevices();
@@ -327,7 +320,6 @@ function renderAll() {
   $("absent").textContent = 32 - state.attendance;
   renderLogs();
 }
-
 function preset(which) {
   const presets = {
     normal:{temp:24,humidity:40,light:2300,people:0},
@@ -351,7 +343,6 @@ function preset(which) {
     }).catch(error => addLog("Device sync failed: " + error.message));
   }
 }
-
 function changeAttendance(value) {
   state.attendance = Math.max(0,Math.min(32,Number(value)));
   $("attendance").value = state.attendance;
@@ -407,7 +398,6 @@ function resetDemo() {
     }).catch(error => addLog("Device reset failed: " + error.message));
   }
 }
-
 function downloadReport() {
   const report = {
     title:"SmartClass demo snapshot",
@@ -432,7 +422,6 @@ function downloadReport() {
   URL.revokeObjectURL(url);
   addLog("Exported demo report");
 }
-
 const classNames = {
   "CSE-A":"B.Tech CSE — Section A",
   "CSE-B":"B.Tech CSE — Section B",
@@ -480,7 +469,6 @@ function downloadQr() {
   anchor.click();
   addLog("Saved demo attendance QR image");
 }
-
 async function loadBackendState() {
   try {
     const [settingsResult,devicesResult,latestResult,activityResult] =
@@ -495,19 +483,16 @@ async function loadBackendState() {
     const manual = settings.manualReadings || {};
     const latest = latestResult.reading;
     const source = latest || manual;
-
     if (source.temperature !== undefined) state.temp = Number(source.temperature);
     if (source.humidity !== undefined) state.humidity = Number(source.humidity);
     if (source.light_level !== undefined) state.light = Number(source.light_level);
     else if (source.lightLevel !== undefined) state.light = Number(source.lightLevel);
     if (source.people !== undefined) state.people = Number(source.people);
-
     for (const device of (devicesResult.devices || [])) {
       if (device.device in state.devices) {
         state.devices[device.device] = Boolean(device.is_on);
       }
     }
-
     const logs = activityResult.activity || activityResult.logs || [];
     if (logs.length) {
       state.logs = logs.slice(0,18).map(item => ({
@@ -520,7 +505,6 @@ async function loadBackendState() {
           `${item.device || "system"}: ${item.action || "activity"}`
       }));
     }
-
     renderAll();
     addLog("Connected to SmartClass backend");
   } catch (error) {
