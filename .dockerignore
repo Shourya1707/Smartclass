@@ -1,0 +1,8 @@
+node_modules
+.git
+.github
+smartclass.db
+smartclass.db-shm
+smartclass.db-wal
+npm-debug.log
+.env
